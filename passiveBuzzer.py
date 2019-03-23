@@ -17,9 +17,17 @@ class PassiveBuzzerController:
         GPIO.setup(buzzerPin, GPIO.OUT)	                        # Set pins' mode is output
         self.buzz = GPIO.PWM(buzzerPin, 500)	                # 440 is initial frequency.
 
+    ## ###################################
+    ## Calculations
 
     def getIntervalMod(self, interval):
         return int(int(time.time() * 1000.0) / int(interval * 1000.0))
+
+    ## ###################################
+    ## MODE CONTROL
+
+    def getMode(self):
+        return self.mode
 
     def setModeContinuous(self, pitch, duration):
         self.mode = 0
@@ -36,9 +44,14 @@ class PassiveBuzzerController:
         self.tweetStop = time.time() + duration
         self.lastMod = self.getIntervalMod(0.01)
 
+    ## ###################################
+    ## Runtime Control
+
     def tick(self):
+        # Continuous 
         if self.mode == 0 and self.contStop <= time.time():
             self.stop()
+        # Siren
         elif self.mode == 1:
             if(self.pitch == 0 and (int(time.time()*6) % 2) == 0 ):
                 self.buzz.ChangeFrequency(500)	
@@ -46,9 +59,11 @@ class PassiveBuzzerController:
             elif self.pitch == 1 and (int(time.time()*6) % 2) == 1 :
                 self.buzz.ChangeFrequency(300)	
                 self.pitch = 0
+        # Tweet
         if self.mode == 2:
-
+            # Check the time constraint
             if self.tweetStop >= time.time():
+                # changes every 0.01s (10ms)
                 curMod = self.getIntervalMod(0.01)
                 if not self.lastMod == curMod:
                     self.lastMod =  curMod
@@ -57,15 +72,15 @@ class PassiveBuzzerController:
             else:
                 self.stop()
 
+    ## ###################################
+    ## State Control
+
     def start(self):
         self.buzz.start(50)
 
     def stop(self):
         self.mode = -1
 	self.buzz.stop()					# Stop the buzzer
-
-    def getMode(self):
-        return self.mode
 
     def destroy(self):
 	self.buzz.stop()					# Stop the buzzer

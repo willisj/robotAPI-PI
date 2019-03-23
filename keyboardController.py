@@ -10,13 +10,18 @@ from getch import getKey
 class KeyboardMonitor:
 
     def __init__(self):
+        # Create the key queue
         self.keyQueue = Queue.Queue();
+
+        # Set the state to running
         self.running = True
 
+        # Start the background thread
         thread = threading.Thread(target=self.monitorFunction, args=())
         thread.daemon = True                            # Daemonize thread
         thread.start()    
 
+    # Function called in it's own thread
     def monitorFunction(self):
         try:
             while(self.running):
@@ -25,12 +30,16 @@ class KeyboardMonitor:
         except KeyboardInterrupt:
             pass
 
+    # Get the next key from the queue 
+    # Client function
     def getNext(self):
         if self.keyQueue.empty():
             return None
         else:
             return self.keyQueue.get()
 
+    # Stop the background thread
+    # Client function
     def stop(self):
         self.running = False
 

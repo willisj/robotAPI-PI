@@ -5,10 +5,9 @@ from servo import ServoWrapper
 from keyboardController import KeyboardMonitor
 from passiveBuzzer import PassiveBuzzerController
 
-#12
-#13
-#18
-#19
+# Ground between PSUP and PI
+# Buzzer: 11
+# Servos: 12, 13, 18, 19
 
 class RoaverModel:
 
@@ -41,6 +40,19 @@ class RoaverModel:
         os.system("reset")
 
     def run(self):
+        # Need to set the carriage return due to raw mode from keyboard lib
+        print("\rCamera:\r")
+        print("\tC   - Toggle Camera\r")
+        print("\tW/S - Pitch\r")
+        print("\tA/D - Yaw\r\n")
+
+        print("Speaker:\r")
+        print("\tH - Low Horn\r")
+        print("\tJ - High Horn\r")
+        print("\tK - Siren\r")
+        print("\tL - Long Ramp\r")
+        print("\tO - Short Ramp\r")
+        print("\tN - STOP SOUND\r")
 
         # Main input loop
         while self.running:
@@ -58,19 +70,23 @@ class RoaverModel:
                 ## #####################
                 ## BUZZER RELATED 
                 elif ord(key) == ord('h'):  # Low Horn
-                    self.buzzerCtrl.setModeContinuous(400, 0.4)
+                    self.buzzerCtrl.setModeContinuous(200, 0.4)
                     self.buzzerCtrl.start()
 
                 elif ord(key) == ord('j'):  # High Horn
-                    self.buzzerCtrl.setModeContinuous(900, 0.4)
+                    self.buzzerCtrl.setModeContinuous(1200, 0.4)
                     self.buzzerCtrl.start()
 
                 elif ord(key) == ord('k'):  # Siren
                     self.buzzerCtrl.setModeSiren()
                     self.buzzerCtrl.start()
 
-                elif ord(key) == ord('l'):  # Siren
+                elif ord(key) == ord('l'):  # tweet
                     self.buzzerCtrl.setModeTweet(300,0.75)
+                    self.buzzerCtrl.start()
+
+                elif ord(key) == ord('o'):  # tweet
+                    self.buzzerCtrl.setModeTweet(1000,0.15)
                     self.buzzerCtrl.start()
 
                 elif ord(key) == ord('n'):  # Stop sound
